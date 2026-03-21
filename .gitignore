@@ -1,0 +1,96 @@
+# ======================
+# STM32 / CubeMX Project
+# ======================
+
+# Build artifacts
+/build/
+/Debug/
+/Release/
+/out/
+/bin/
+/obj/
+
+# STM32CubeIDE specific
+*.launch
+*.settings/
+*.cproject
+*.project
+*.mxproject
+*.log
+*.trace
+*.svd
+
+# STM32CubeMX generated backup and metadata
+*.bak
+*.tmp
+*.db
+*.ioc-bak
+MX_Device/.*
+MX_Device/*
+
+# Keil / uVision
+*.uvguix.*
+*.uvoptx
+*.uvprojx
+*.uvopt
+*.dep
+*.map
+*.axf
+*.hex
+
+# IAR
+*.ewd
+*.ewp
+*.ewt
+*.ewd.xcl
+*.map
+*.obj
+*.out
+
+# VSCode / PlatformIO
+.pio/
+.ccls-cache/
+*.code-workspace
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Generated sources from CubeMX
+Core/Inc/stm32*_hal_conf.h
+Core/Inc/stm32*_it.h
+Core/Src/stm32*_hal_msp.c
+Core/Src/stm32*_it.c
+Core/Src/system_stm32*.c
+
+# Object and temp files
+*.o
+*.d
+*.elf
+*.map
+*.list
+*.lst
+*.srec
+*.bin
+
+# Logs and temporary
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.dmp
+
+# Python virtualenvs or helper scripts
+__pycache__/
+venv/
+
+# Other IDE junk
+.idea/
+*.iml
+*.sublime-*
+*.DS_Store
+Thumbs.db
