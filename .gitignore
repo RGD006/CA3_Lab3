@@ -1,0 +1,33 @@
+# --- Результати компіляції (Build artifacts) ---
+Debug/
+Release/
+bin/
+obj/
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# --- Тимчасові файли IDE (STM32CubeIDE/Eclipse) ---
+.settings/
+.metadata/
+*.launch
+.launches/
+RemoteSystemsTempFiles/
+.DS_Store
+
+# --- Логи та файли індексації ---
+*.log
+.cache/
+*.pyc
+
+# --- Файли налаштувань користувача (User specific) ---
+# Зазвичай ми ігноруємо їх, але залишаємо .project та .cproject, 
+# щоб інші могли відкрити проєкт.
+.history/
+*.bak
+
+# --- Файли програматорів та зневаджувачів ---
+*.pdm
+*.svd
