@@ -92,11 +92,10 @@ int main(void)
 	 HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
   }
 
-  QC1602_WriteChar(&disp1, 'H', 0, 7);
-  QC1602_WriteChar(&disp1, 'E', 0, 8);
-  QC1602_WriteChar(&disp1, 'L', 0, 9);
-  QC1602_WriteChar(&disp1, 'L', 0, 10);
-  QC1602_WriteChar(&disp1, 'O', 0, 11);
+  for (uint8_t i = 0; i < 0xFF; i++) {
+	  QC1602_WriteChar(&disp1, i, 0, 0);
+	  HAL_Delay(300);
+  }
 
   /* USER CODE END 2 */
 
@@ -104,8 +103,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -1,8 +1,16 @@
 #include "QC1602.h"
 
-HAL_StatusTypeDef QC1602_WriteCMD(QC1602_HandleTypeDef *handle ,uint8_t cmd)
+static uint8_t __QC1602_CheckHandleTypeDef(QC1602_HandleTypeDef *handle)
 {
 	if (!handle->display_bus || handle->extender_addr == 0)
+    	return HAL_ERROR;
+
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef QC1602_WriteCMD(QC1602_HandleTypeDef *handle ,uint8_t cmd)
+{
+	if (__QC1602_CheckHandleTypeDef(handle) != HAL_OK)
 		return HAL_ERROR;
 
     uint8_t data_u = 0, data_l = 0;
@@ -64,12 +72,9 @@ HAL_StatusTypeDef QC1602_Init(
     HAL_Delay(1);
 
     // Turn on display. Turn on cursor
-    res = QC1602_WriteCMD(handle, 0x0C);
-    HAL_Delay(1);
+    QC1602_ClearDisplay(handle);
 
     // Clear screen
-    res = QC1602_WriteCMD(handle, 0x01);
-    HAL_Delay(2);
 
     // Enter mode: cursor move right after write
     res = QC1602_WriteCMD(handle, 0x06);
@@ -85,11 +90,10 @@ HAL_StatusTypeDef QC1602_WriteChar(
 		uint8_t column
 )
 {
-    if (!handle->display_bus || handle->extender_addr == 0)
-    	return HAL_ERROR;
-
-    if (row > handle->row_max || column > handle->column_max)
-    	return HAL_ERROR;
+	if (__QC1602_CheckHandleTypeDef(handle) != HAL_OK
+			|| row > handle->row_max
+			|| column > handle->column_max)
+		return HAL_ERROR;
 
     uint8_t shift;
 
@@ -114,4 +118,40 @@ HAL_StatusTypeDef QC1602_WriteChar(
     data_t[3] = data_l | QC1602_EN_LOW  | rs | backlight;
 
     return HAL_I2C_Master_Transmit(handle->display_bus, handle->extender_addr, data_t, 4, 100);
+}
+
+HAL_StatusTypeDef QC1602_WriteString(
+		QC1602_HandleTypeDef *handle,
+		const char *string,
+		const size_t string_len,
+		uint8_t start_row,
+		uint8_t start_column
+)
+{
+	if (__QC1602_CheckHandleTypeDef(handle) != HAL_OK
+			|| start_row > handle->row_max
+			|| start_column > handle->column_max)
+		return HAL_ERROR;
+
+	HAL_StatusTypeDef res = HAL_OK;
+	size_t row = start_row;
+
+	for (size_t i = 0; i < string_len; i++) {
+		if (string[i] == '\n')
+			row++;
+		else
+			res = QC1602_WriteChar(handle, string[i], row, start_column + i);
+	}
+
+	return res;
+}
+
+HAL_StatusTypeDef QC1602_ClearDisplay(QC1602_HandleTypeDef *handle)
+{
+	if (__QC1602_CheckHandleTypeDef(handle) != HAL_OK)
+		return HAL_ERROR;
+
+    HAL_StatusTypeDef res = QC1602_WriteCMD(handle, 0x01);
+    HAL_Delay(2);
+    return res;
 }

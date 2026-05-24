@@ -34,4 +34,14 @@ HAL_StatusTypeDef QC1602_Init(
 		uint8_t column_max
 );
 
+HAL_StatusTypeDef QC1602_WriteString(
+		QC1602_HandleTypeDef *handle,
+		const char *string,
+		const size_t string_len,
+		uint8_t start_row,
+		uint8_t start_column
+);
+
+HAL_StatusTypeDef QC1602_ClearDisplay(QC1602_HandleTypeDef *handle);
+
 #endif
