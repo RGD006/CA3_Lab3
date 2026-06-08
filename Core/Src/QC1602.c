@@ -44,41 +44,33 @@ HAL_StatusTypeDef QC1602_Init(
 	handle->row_max = row_max;
 	handle->column_max = column_max;
 
-    HAL_Delay(50);
-
-    uint8_t init_data[2];
-
-    // Command 1: 0x30
-    init_data[0] = 0x30 | QC1602_EN_HIGH;  // EN=1
-    init_data[1] = 0x38 | QC1602_EN_LOW;  // EN=0
-    res = HAL_I2C_Master_Transmit(handle->display_bus, handle->extender_addr, init_data, 2, 100);
+    HAL_Delay(50); // >40 ms power-on delay
+    res = QC1602_WriteCMD(handle, 0x30);
     HAL_Delay(5);
 
-    // Command 2: 0x30
-    res = HAL_I2C_Master_Transmit(handle->display_bus, handle->extender_addr, init_data, 2, 100);
-    HAL_Delay(1);
+    res = QC1602_WriteCMD(handle, 0x30);
+    HAL_Delay(2);
 
-    // Command 3: 0x30
-    res = HAL_I2C_Master_Transmit(handle->display_bus, handle->extender_addr, init_data, 2, 100);
-    HAL_Delay(1);
+    res = QC1602_WriteCMD(handle, 0x30);
+    HAL_Delay(10);
 
-    // Command 4: 0x20 (transmit to 4 bit mode)
-    init_data[0] = 0x20 | QC1602_EN_HIGH;  // EN=1
-    init_data[1] = 0x20 | QC1602_EN_LOW;  // EN=0
-    res = HAL_I2C_Master_Transmit(handle->display_bus, handle->extender_addr, init_data, 2, 100);
-    HAL_Delay(1);
+    res = QC1602_WriteCMD(handle, 0x20); // switch to 4-bit mode
+    HAL_Delay(2);
 
-    res = QC1602_WriteCMD(handle, 0x28);
-    HAL_Delay(1);
+    res = QC1602_WriteCMD(handle, 0x28); // 4-bit, 2-line, 5×8 font
+    HAL_Delay(2);
 
-    // Turn on display. Turn on cursor
-    QC1602_ClearDisplay(handle);
+    res = QC1602_WriteCMD(handle, 0x08); // display OFF
+    HAL_Delay(2);
 
-    // Clear screen
+    res = QC1602_WriteCMD(handle, 0x01); // clear display
+    HAL_Delay(3);
 
-    // Enter mode: cursor move right after write
-    res = QC1602_WriteCMD(handle, 0x06);
-    HAL_Delay(1);
+    res = QC1602_WriteCMD(handle, 0x06); // entry mode: cursor increment, no shift
+    HAL_Delay(2);
+
+    res = QC1602_WriteCMD(handle, 0x0C); // display ON, cursor OFF, blink OFF
+    HAL_Delay(5);
 
     return res;
 }
@@ -141,6 +133,8 @@ HAL_StatusTypeDef QC1602_WriteString(
 			row++;
 		else
 			res = QC1602_WriteChar(handle, string[i], row, start_column + i);
+
+		HAL_Delay(2);
 	}
 
 	return res;
@@ -152,6 +146,6 @@ HAL_StatusTypeDef QC1602_ClearDisplay(QC1602_HandleTypeDef *handle)
 		return HAL_ERROR;
 
     HAL_StatusTypeDef res = QC1602_WriteCMD(handle, 0x01);
-    HAL_Delay(2);
+    HAL_Delay(5);
     return res;
 }

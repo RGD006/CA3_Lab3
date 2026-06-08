@@ -92,10 +92,6 @@ int main(void)
 	 HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
   }
 
-  for (uint8_t i = 0; i < 0xFF; i++) {
-	  QC1602_WriteChar(&disp1, i, 0, 0);
-	  HAL_Delay(300);
-  }
 
   /* USER CODE END 2 */
 
@@ -103,6 +99,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	HAL_Delay(300);
+	QC1602_WriteString(&disp1, "mr.FICE", 7, 0, 0);
+	HAL_Delay(300);
+	QC1602_ClearDisplay(&disp1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
