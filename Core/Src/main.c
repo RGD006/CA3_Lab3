@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "QC1602.h"
 #include "dht22.h"
+#include "stdio.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,6 +99,7 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start(&htim2);
+
   if (QC1602_Init(&disp1, &hi2c1, 0x4E, 1, 16) != HAL_OK) {
 	 HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
   }
@@ -121,6 +124,15 @@ int main(void)
 
 	temperature = (float)temp;
 	humidity = (float)rh;
+
+	char temperature_buf[14], humidity_buf[11];
+
+	snprintf(temperature_buf, sizeof(temperature_buf), "Temp: %d 'C", (uint8_t)temperature);
+	snprintf(humidity_buf, sizeof(humidity_buf), "Humid: %d", (uint8_t)humidity);
+
+	QC1602_ClearDisplay(&disp1);
+	QC1602_WriteString(&disp1, temperature_buf, strlen(temperature_buf), 0, 0);
+	QC1602_WriteString(&disp1, humidity_buf, strlen(humidity_buf), 1, 0);
 
 	HAL_Delay(3000);
     /* USER CODE END WHILE */
@@ -273,14 +285,24 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED_GREEN_Pin|DHT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : LED_GREEN_Pin DHT_Pin */
-  GPIO_InitStruct.Pin = LED_GREEN_Pin|DHT_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(DHT_GPIO_Port, DHT_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : LED_GREEN_Pin */
+  GPIO_InitStruct.Pin = LED_GREEN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_GREEN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : DHT_Pin */
+  GPIO_InitStruct.Pin = DHT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(DHT_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
